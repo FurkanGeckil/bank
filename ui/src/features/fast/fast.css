@@ -1,0 +1,10 @@
+.fast-bar {
+  display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+}
+.fast-khik-group {
+  margin-bottom:12px;
+}
+.fast-khik-items {
+  max-height: 360px;
+  overflow:auto;
+}

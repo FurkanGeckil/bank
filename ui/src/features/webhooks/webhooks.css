@@ -1,0 +1,9 @@
+.webhook-logs-container { display:flex; flex-direction:column; gap:10px; }
+.webhook-log-item { border:1px solid #e7ecef; border-radius:12px; background:#f9fbfc; padding:12px; }
+.webhook-log-item.success { border-left:4px solid #1b5e20; }
+.webhook-log-item.failed { border-left:4px solid #b71c1c; }
+.webhook-log-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+.webhook-stats { display:flex; gap:8px; }
+.stat-badge { border-radius:999px; padding:6px 10px; font-weight:800; }
+.stat-badge.success { background:#e8f5e9; color:#1b5e20; }
+.stat-badge.failed { background:#ffebee; color:#b71c1c; }

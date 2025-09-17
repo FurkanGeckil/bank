@@ -1,0 +1,25 @@
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+  backdrop-filter: blur(2px);
+}
+
+.loading-overlay.show { display: flex; }
+
+.loading-box {
+  background: #fff;
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 0 12px 30px rgba(0,0,0,.15);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-weight: 700;
+}
+
+.loading-box i { font-size: 18px; }

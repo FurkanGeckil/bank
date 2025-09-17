@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XXX Bank Module - Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-university"></i> XXX Bank Module</h1>
+                <p>XXX Bank Management Dashboard</p>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+
+            <button class="tab-btn active" onclick="showTab('dashboard')">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </button>
+
+            <button class="tab-btn" onclick="showTab('accounts')">
+                <i class="fas fa-credit-card"></i> Hesaplar
+            </button>
+
+            <button class="tab-btn" onclick="showTab('webhooks')">
+                <i class="fas fa-bell"></i> WebHook İşlemleri
+            </button>
+
+            <button class="tab-btn" onclick="showTab('transactions')">
+                <i class="fas fa-list"></i> İşlemler
+            </button>
+
+            <button class="tab-btn" onclick="showTab('settings')">
+                <i class="fas fa-cog"></i> Banka Ayarları
+            </button>
+
+            <button class="tab-btn" onclick="showTab('fastRemit')">
+                <i class="fas fa-paper-plane"></i> FAST’e Aktarım
+            </button>
+
+            <button class="tab-btn" onclick="showTab('fastTransactions')">
+                <i class="fas fa-bolt"></i> FAST İşlemleri
+            </button>
+
+            <button class="tab-btn" onclick="showTab('fastTransactions2')">
+                <i class="fas fa-bolt"></i> FAST İşlemleri 2
+            </button>
+
+        </nav>
+
+<!-- FAST İşlemleri 2 Tab -->
+<div id="fastTransactions2" class="tab-content">
+
+  <div class="section-header">
+    
+    <div class="helper" style="gap:10px; flex-wrap:wrap">
+      
+      <select id="fast2KhikSelect" class="form-control" style="min-width:280px">
+        <option value="">Tümü (tüm KHIK hesapları)</option>
+      </select>
+
+      <!-- Tarih aralığı -->
+      <input id="fast2Start" type="date" class="form-control" title="Başlangıç günü" />
+      <input id="fast2End"   type="date" class="form-control" title="Bitiş günü" />
+
+      <!-- Filtrele / Yenile -->
+      <button class="btn" onclick="renderFastTransactionsV2()">
+        <i class="fas fa-magnifying-glass"></i> Ara
+      </button>
+
+      <button class="btn secondary" onclick="loadFastTransactionsV2()">
+        <i class="fas fa-rotate"></i> Yenile
+      </button>
+
+    </div>
+  </div>
+
+  <div class="card">
+
+    <div class="card-header">
+      <h3><i class="fas fa-list"></i> KHIK Bazında İşlem Listeleri</h3>
+      <div id="fast2Summary" class="helper"></div>
+    </div>
+
+    <div class="card-body">
+      <!-- Her KHIK için bir kart; iç listesi scrollable -->
+      <div id="fast2List"></div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- FAST İşlemleri Tab -->
+<div id="fastTransactions" class="tab-content">
+  <div class="section-header" style="gap:12px; align-items:flex-end; flex-wrap:wrap">
+
+    <div class="form-group" style="min-width:280px;">
+      <label><i class="fas fa-credit-card"></i> Banka IBAN</label>
+      <input id="fastBankIbanRO" class="form-control" readonly placeholder="Yükleniyor..." />
+    </div>
+
+    <div class="form-group" style="min-width:280px;">
+      <label><i class="fas fa-building-columns"></i> KHIK Hesap IBAN</label>
+      <input id="fastKhikIbanRO" class="form-control" readonly placeholder="Tümü" />
+    </div>
+
+    <div class="helper" style="margin-left:auto; gap:8px;">
+      <input id="fastTxSearch" class="form-control" placeholder="Banka ID ile filtrele" />
+      <button class="btn btn-secondary" onclick="loadFastTransactions()">
+        <i class="fas fa-rotate"></i> Yenile
+      </button>
+    </div>
+
+  </div>
+
+  <div class="card">
+
+    <div class="card-header">
+      <h3><i class="fas fa-list"></i> Tüm FAST İşlemleri</h3>
+      <div class="helper" id="fastTxSummary"></div>
+    </div>
+
+    <div class="card-body">
+
+      <div id="fastTxList" class="transaction-list">
+        <div class="loading">Yükleniyor...</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+        <!-- FAST Remit Tab -->
+        <div id="fastRemit" class="tab-content">
+
+        <div class="section-header">
+            <h2><i class="fas fa-paper-plane"></i> FAST’e Aktarım</h2>
+        </div>
+
+        <div class="card">
+
+            <div class="card-header">
+                <h3><i class="fas fa-sliders"></i> Aktarım Parametreleri</h3>
+            </div>
+
+            <div class="card-body">
+
+            <div class="form-group">
+                <label>Banka ID (salt okunur)</label>
+                <input id="fastBankId" class="form-control" value="TR330006100519786457841336" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>KHIK TL Hesap</label>
+
+                <div class="select-control">
+                    <select id="fastKhikTlId" class="form-control">
+                        <option value="" disabled selected>Hesap seçiniz...</option>
+                    </select>
+                </div>
+
+                <small class="form-text text-muted">Listeden bir TL hesabı seçiniz</small>
+            </div>
+
+            <div class="form-group">
+                <label>DTL Hesap ID (salt okunur)</label>
+                <input id="fastDtlId" class="form-control" value="DTL_Hesap_ID" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Tutar (TRY)</label>
+                <input id="fastAmount" class="form-control" type="number" min="0.01" step="0.01" placeholder="örn. 250.75">
+            </div>
+
+            <div class="form-group">
+                <label>Açıklama (opsiyonel)</label>
+                <input id="fastDesc" class="form-control" placeholder="Bankadan FAST’e aktarım">
+            </div>
+
+            <div style="margin-top:12px">
+                <button class="btn btn-primary" onclick="submitFastTransfer()">
+                <i class="fas fa-paper-plane"></i> FAST’e Gönder
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            
+            <div class="dashboard-grid">
+                <div class="card">
+
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-line"></i> Genel Bakış</h3>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-number" id="totalAccounts">-</div>
+                                <div class="stat-label">Toplam Hesap</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" id="totalBalance">-</div>
+                                <div class="stat-label">Toplam Bakiye</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" id="totalTransactions">-</div>
+                                <div class="stat-label">Toplam İşlem</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="card">
+
+                    <div class="card-header">
+                        <h3><i class="fas fa-clock"></i> Son İşlemler</h3>
+                    </div>
+
+                    <div class="card-body">
+                        <div id="recentTransactions" class="transaction-list">
+                            <div class="loading">Yükleniyor...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Accounts Tab -->
+        <div id="accounts" class="tab-content">
+
+            <div class="section-header">
+                <h2><i class="fas fa-credit-card"></i> Hesap Yönetimi</h2>
+                <button class="btn btn-primary" onclick="showCreateAccountModal()">
+                    <i class="fas fa-plus"></i> Yeni Hesap
+                </button>
+            </div>
+
+            <div class="accounts-grid" id="accountsGrid">
+                <div class="loading">Hesaplar yükleniyor...</div>
+            </div>
+        </div>
+
+
+        <!-- WebHook İşlemleri Tab -->
+        <div id="webhooks" class="tab-content">
+
+            <div class="section-header">
+                <h2><i class="fas fa-bell"></i> WebHook İşlemleri</h2>
+                <button class="btn btn-secondary" onclick="loadWebhookLogs()">
+                    <i class="fas fa-refresh"></i> Yenile
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-link"></i> Webhook Konfigürasyonu</h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label><i class="fas fa-link"></i> Webhook URL (Read Only)</label>
+                        <input type="text" id="webhookUrl" class="form-control" readonly value="http://localhost:8081/api/v1/khik/transfer-webhook">
+                        <small class="form-text text-muted">Transfer işlemleri bu webhook adresine gönderilir</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-history"></i> Webhook Logları</h3>
+                    <div class="webhook-stats">
+                        <span class="stat-badge success" id="successCount">0</span>
+                        <span class="stat-badge failed" id="failedCount">0</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="webhookLogsList" class="webhook-logs-container">
+                        <div class="loading">Webhook logları yükleniyor...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transactions Tab -->
+        <div id="transactions" class="tab-content">
+
+            <div class="section-header">
+                <button class="btn btn-secondary" onclick="loadTransactionsByTc()">
+                    <i class="fas fa-refresh"></i> Yenile
+                </button>
+            </div>
+
+            <div class="card">
+
+                <div class="card-header">
+                    <h3><i class="fas fa-list"></i> TC ID Bazında İşlemler</h3>
+                </div>
+                
+                <div class="card-body">
+                    <div id="tcDetails" class="tc-details">
+                        <div class="loading">TC ID işlemleri yükleniyor...</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Bank Settings Tab -->
+        <div id="settings" class="tab-content">
+            <div class="section-header">
+                <h2><i class="fas fa-cog"></i> Banka Ayarları</h2>
+                <button class="btn btn-secondary" onclick="loadBankSettings()">
+                    <i class="fas fa-refresh"></i> Yenile
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-university"></i> Banka Bilgileri</h3>
+                </div>
+
+                <div class="card-body">
+                    <div class="form-group">
+                        <label><i class="fas fa-credit-card"></i> Banka IBAN</label>
+                        <input type="text" id="bankIban" class="form-control" placeholder="TR330006100519786457841326">
+                        <small class="form-text text-muted">Banka hesabının IBAN numarası</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-building"></i> Banka Adı</label>
+                        <input type="text" id="bankName" class="form-control" placeholder="KHIK Bank">
+                        <small class="form-text text-muted">Banka adı</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-money-bill"></i> Para Birimi</label>
+                        <input type="text" id="bankCurrency" class="form-control" readonly value="TRY">
+                        <small class="form-text text-muted">Banka para birimi (salt okunur)</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-bolt"></i> Fast API Endpoint</label>
+                        <input type="text" id="fastApiEndpoint" class="form-control" placeholder="http://localhost:8085/khik-fast" inputmode="url"
+  pattern="https?://.+">
+                        <small class="form-text text-muted">API uçnoktasını değiştir</small>
+
+                        <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+                            <button class="btn btn-secondary" onclick="setFastApiPlaceholder()">
+                            <i class="fas fa-check"></i> Ayarla
+                            </button>
+                            <button class="btn" onclick="resetFastApiPlaceholder()">
+                            <i class="fas fa-rotate"></i> Sıfırla
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <button class="btn btn-primary" onclick="updateBankSettings()">
+                            <i class="fas fa-save"></i> Ayarları Kaydet
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Account Modal -->
+    <div id="createAccountModal" class="modal">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h3><i class="fas fa-plus"></i> Yeni Hesap Oluştur</h3>
+                <span class="close" onclick="closeCreateAccountModal()">&times;</span>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Hesap ID (IBAN)</label>
+                    <input type="text" id="newAccountId" class="form-control" placeholder="TR330006100519786457841326">
+                </div>
+
+                <div class="form-group">
+                    <label>Hesap Adı</label>
+                    <input type="text" id="newAccountName" class="form-control" placeholder="Test Hesabı">
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeCreateAccountModal()">İptal</button>
+                <button class="btn btn-primary" onclick="createAccount()">Oluştur</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>İşlem yapılıyor...</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

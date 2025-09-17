@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  bank-module:
+    image: bank-module:latest
+    container_name: bank-module
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SERVER_PORT=8081
+      - SPRING_DATASOURCE_URL=jdbc:h2:file:/app/data/bankdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+      - SPRING_DATASOURCE_USERNAME=sa
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_H2_CONSOLE_ENABLED=true
+      - SPRING_H2_CONSOLE_PATH=/h2-console
+      - WEBHOOK_TRANSFER_URL=http://host.docker.internal:8082/api/v1/khik/transfer-webhook
+    volumes:
+      - bank_data:/app/data
+    networks:
+      - bank-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Add a webhook consumer for testing
+  webhook-consumer:
+    image: nginx:alpine
+    container_name: webhook-consumer
+    ports:
+      - "8082:80"
+    volumes:
+      - ./webhook-consumer:/usr/share/nginx/html
+    networks:
+      - bank-network
+    restart: unless-stopped
+    profiles:
+      - testing
+
+volumes:
+  bank_data:
+    driver: local
+
+networks:
+  bank-network:
+    driver: bridge

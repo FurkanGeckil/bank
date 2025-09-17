@@ -1,0 +1,812 @@
+{
+	"info": {
+		"_postman_id": "khik-bank-module-collection",
+		"name": "KHIK Bank Module",
+		"description": "KHIK Bank Module API Collection - Spring Boot Bank Application (Updated for Account-only structure)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/khik-bank/health",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"health"
+					]
+				},
+				"description": "Uygulamanın çalışır durumda olup olmadığını kontrol eder"
+			},
+			"response": []
+		},
+		{
+			"name": "Hesap Oluştur",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"accountId\": \"TR330006100519786457841326\",\n    \"accountName\": \"Test Account\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/khik-bank/account/create",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"account",
+						"create"
+					]
+				},
+				"description": "Yeni hesap oluşturur. Bakiye otomatik olarak 0 ile başlar."
+			},
+			"response": []
+		},
+		{
+			"name": "Hesap Oluştur - Geçersiz IBAN",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"accountId\": \"INVALID_IBAN\",\n    \"accountName\": \"Test Account\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/khik-bank/account/create",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"account",
+						"create"
+					]
+				},
+				"description": "Geçersiz IBAN ile hesap oluşturma test eder"
+			},
+			"response": []
+		},
+		{
+			"name": "Hesap Oluştur - Boş Hesap Adı",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"accountId\": \"TR330006100519786457841326\",\n    \"accountName\": \"\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/khik-bank/account/create",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"account",
+						"create"
+					]
+				},
+				"description": "Boş hesap adı ile hesap oluşturma test eder"
+			},
+			"response": []
+		},
+		{
+			"name": "Hesap Bilgileri - KHIK Bank",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/khik-bank/account/TR330006100519786457841326",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"account",
+						"TR330006100519786457841326"
+					]
+				},
+				"description": "KHIK Bank hesap bilgilerini getirir"
+			},
+			"response": []
+		},
+		{
+			"name": "Hesap Bilgileri - Mevcut Olmayan Hesap",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/khik-bank/account/NON_EXISTENT_ACCOUNT",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"account",
+						"NON_EXISTENT_ACCOUNT"
+					]
+				},
+				"description": "Mevcut olmayan hesap bilgilerini getirmeye çalışır"
+			},
+			"response": []
+		},
+		{
+			"name": "Toplu Transfer İşlemi",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"transfers\": [\n        {\n            \"bankAccountId\": \"TR330006100519786457841326\",\n            \"amount\": 1000.00,\n            \"description\": \"Maaş ödemesi\",\n            \"tcId\": \"12345678901\"\n        },\n        {\n            \"bankAccountId\": \"TR330006100519786457841327\",\n            \"amount\": 500.00,\n            \"description\": \"Bonus ödemesi\",\n            \"tcId\": \"12345678902\"\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/khik-bank/transfer",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"transfer"
+					]
+				},
+				"description": "Toplu transfer işlemi gerçekleştirir. Birden fazla hesaba aynı anda transfer yapar."
+			},
+			"response": []
+		},
+		{
+			"name": "Toplu Transfer İşlemi - Geçersiz IBAN",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"transfers\": [\n        {\n            \"bankAccountId\": \"INVALID_IBAN\",\n            \"amount\": 1000.00,\n            \"description\": \"Test transfer\",\n            \"tcId\": \"12345678901\"\n        },\n        {\n            \"bankAccountId\": \"TR330006100519786457841326\",\n            \"amount\": 500.00,\n            \"description\": \"Test transfer\",\n            \"tcId\": \"12345678902\"\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/khik-bank/transfer",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"transfer"
+					]
+				},
+				"description": "Geçersiz IBAN ile toplu transfer işlemi test eder (kısmi başarı senaryosu)"
+			},
+			"response": []
+		},
+		{
+			"name": "Toplu Transfer İşlemi - Geçersiz TC Kimlik",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"transfers\": [\n        {\n            \"bankAccountId\": \"TR330006100519786457841326\",\n            \"amount\": 1000.00,\n            \"description\": \"Test transfer\",\n            \"tcId\": \"123456789\"\n        },\n        {\n            \"bankAccountId\": \"TR330006100519786457841327\",\n            \"amount\": 500.00,\n            \"description\": \"Test transfer\",\n            \"tcId\": \"12345678901\"\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/khik-bank/transfer",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"transfer"
+					]
+				},
+				"description": "Geçersiz TC Kimlik No ile toplu transfer işlemi test eder"
+			},
+			"response": []
+		},
+		{
+			"name": "Toplu Transfer İşlemi - Negatif Miktar",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"transfers\": [\n        {\n            \"bankAccountId\": \"TR330006100519786457841326\",\n            \"amount\": -100.00,\n            \"description\": \"Test transfer\",\n            \"tcId\": \"12345678901\"\n        },\n        {\n            \"bankAccountId\": \"TR330006100519786457841327\",\n            \"amount\": 500.00,\n            \"description\": \"Test transfer\",\n            \"tcId\": \"12345678902\"\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/khik-bank/transfer",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"transfer"
+					]
+				},
+				"description": "Negatif miktar ile toplu transfer işlemi test eder"
+			},
+			"response": []
+		},
+		{
+			"name": "Toplu Transfer İşlemi - Sistemde Olmayan Hesap",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"transfers\": [\n        {\n            \"bankAccountId\": \"TR330006100519786457841327\",\n            \"amount\": 1000.00,\n            \"description\": \"Test transfer\",\n            \"tcId\": \"12345678901\"\n        },\n        {\n            \"bankAccountId\": \"TR330006100519786457841328\",\n            \"amount\": 500.00,\n            \"description\": \"Test transfer\",\n            \"tcId\": \"12345678902\"\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/khik-bank/transfer",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"transfer"
+					]
+				},
+				"description": "Sistemde tanımlı olmayan hesaplara toplu transfer işlemi test eder"
+			},
+			"response": []
+		},
+		{
+			"name": "Hesap Sil",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/khik-bank/account/TR330001002500000001234567",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"account",
+						"TR330001002500000001234567"
+					]
+				},
+				"description": "Belirtilen hesabı ve ilgili tüm transactionları siler. Sadece sıfır bakiyeli hesaplar silinebilir."
+			},
+			"response": []
+		},
+		{
+			"name": "Hesap Sil - Pozitif Bakiyeli",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/khik-bank/account/TR330001002500000001234567",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"account",
+						"TR330001002500000001234567"
+					]
+				},
+				"description": "Pozitif bakiyeli hesabı siler (artık başarılı olur)"
+			},
+			"response": []
+		},
+		{
+			"name": "Hesap Sil - KHIK Bank Hesabı",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/khik-bank/account/TR330006100519786457841326",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"account",
+						"TR330006100519786457841326"
+					]
+				},
+				"description": "KHIK Bank hesabını silmeye çalışır (hata döner - korunmuş hesap)"
+			},
+			"response": []
+		},
+		{
+			"name": "Hesap Sil - Sistemde Olmayan",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/khik-bank/account/TR330001002500000009999999",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"account",
+						"TR330001002500000009999999"
+					]
+				},
+				"description": "Sistemde olmayan hesabı silmeye çalışır (hata döner)"
+			},
+			"response": []
+		},
+		{
+			"name": "Tüm Hesapları Listele",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/khik-bank/list",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"list"
+					]
+				},
+				"description": "Sistemdeki tüm aktif hesapları ve bakiyelerini listeler"
+			},
+			"response": []
+		},
+		{
+			"name": "H2 Console",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/h2-console",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"h2-console"
+					]
+				},
+				"description": "H2 Database Console'a erişim sağlar"
+			},
+			"response": []
+		},
+		{
+			"name": "Hesap İşlemlerini Getir",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/khik-bank/account/transactions?accountId=TR330006100519786457841326",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"account",
+						"transactions"
+					],
+					"query": [
+						{
+							"key": "accountId",
+							"value": "TR330006100519786457841326",
+							"description": "Account ID (IBAN) to get transactions for"
+						}
+					]
+				},
+				"description": "Belirtilen hesabın tüm işlemlerini getirir (en güncelden en eskiye sıralı)"
+			},
+			"response": []
+		},
+		{
+			"name": "İstatistikler",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/khik-bank/stats",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"stats"
+					]
+				},
+				"description": "Sistemdeki toplam işlem sayısını getirir"
+			},
+			"response": []
+		},
+		{
+			"name": "TC Kimlik No'ya Göre İşlemler",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/khik-bank/transactions/by-tc",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"transactions",
+						"by-tc"
+					]
+				},
+				"description": "Tüm işlemleri TC Kimlik No'ya göre gruplar"
+			},
+			"response": []
+		},
+		{
+			"name": "Webhook Logları",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/khik-bank/webhook-logs",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"webhook-logs"
+					]
+				},
+				"description": "Tüm webhook loglarını getirir"
+			},
+			"response": []
+		},
+		{
+			"name": "Banka Ayarlarını Getir",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/khik-bank/settings",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"settings"
+					]
+				},
+				"description": "Mevcut banka ayarlarını getirir"
+			},
+			"response": []
+		},
+		{
+			"name": "Banka Ayarlarını Güncelle",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"bankIban\": \"TR330006100519786457841326\",\n    \"bankName\": \"KHIK Bank\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/khik-bank/settings",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"settings"
+					]
+				},
+				"description": "Banka ayarlarını oluşturur veya günceller"
+			},
+			"response": []
+		},
+		{
+			"name": "Banka Ayarlarını Sıfırla",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/khik-bank/settings",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"settings"
+					]
+				},
+				"description": "Banka ayarlarını sıfırlar"
+			},
+			"response": []
+		},
+		{
+			"name": "Webhook Consumer Kaydet",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"consumerName\": \"Test Consumer\",\n    \"callbackUrl\": \"https://example.com/webhook\",\n    \"description\": \"Test webhook consumer\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/khik-bank/webhook/register",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"webhook",
+						"register"
+					]
+				},
+				"description": "Yeni bir webhook consumer kaydeder"
+			},
+			"response": []
+		},
+		{
+			"name": "Webhook Consumer Kaydet - Geçersiz URL",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"consumerName\": \"Test Consumer\",\n    \"callbackUrl\": \"invalid-url\",\n    \"description\": \"Test webhook consumer\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/khik-bank/webhook/register",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"webhook",
+						"register"
+					]
+				},
+				"description": "Geçersiz URL ile webhook consumer kaydetme test eder"
+			},
+			"response": []
+		},
+		{
+			"name": "Webhook Consumer Kaydet - Boş İsim",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"consumerName\": \"\",\n    \"callbackUrl\": \"https://example.com/webhook\",\n    \"description\": \"Test webhook consumer\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/khik-bank/webhook/register",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"webhook",
+						"register"
+					]
+				},
+				"description": "Boş isim ile webhook consumer kaydetme test eder"
+			},
+			"response": []
+		},
+		{
+			"name": "Tüm Webhook Consumer'ları Listele",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/khik-bank/webhook/consumers",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"webhook",
+						"consumers"
+					]
+				},
+				"description": "Tüm webhook consumer'ları listeler"
+			},
+			"response": []
+		},
+		{
+			"name": "Webhook Consumer Getir",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/khik-bank/webhook/consumers/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"webhook",
+						"consumers",
+						"1"
+					]
+				},
+				"description": "Belirli bir webhook consumer'ı getirir"
+			},
+			"response": []
+		},
+		{
+			"name": "Webhook Consumer Getir - Mevcut Olmayan",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/khik-bank/webhook/consumers/999",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"webhook",
+						"consumers",
+						"999"
+					]
+				},
+				"description": "Mevcut olmayan webhook consumer'ı getirmeye çalışır"
+			},
+			"response": []
+		},
+		{
+			"name": "Webhook Consumer Güncelle",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"consumerName\": \"Updated Consumer\",\n    \"callbackUrl\": \"https://example.com/webhook-updated\",\n    \"description\": \"Updated webhook consumer\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/khik-bank/webhook/consumers/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"webhook",
+						"consumers",
+						"1"
+					]
+				},
+				"description": "Webhook consumer'ı günceller"
+			},
+			"response": []
+		},
+		{
+			"name": "Webhook Consumer Sil",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/khik-bank/webhook/consumers/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"webhook",
+						"consumers",
+						"1"
+					]
+				},
+				"description": "Webhook consumer'ı siler"
+			},
+			"response": []
+		},
+		{
+			"name": "Webhook Consumer Sil - Mevcut Olmayan",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/khik-bank/webhook/consumers/999",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"khik-bank",
+						"webhook",
+						"consumers",
+						"999"
+					]
+				},
+				"description": "Mevcut olmayan webhook consumer'ı silmeye çalışır"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8081",
+			"type": "string"
+		}
+	]
+}
