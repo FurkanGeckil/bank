@@ -11,10 +11,7 @@ import java.util.Optional;
 @Repository
 public interface WebhookConsumerRepository extends JpaRepository<WebhookConsumer, Long> {
 
-    /**
-     * Tüm webhook consumer'ları getirir
-     */
-    List<WebhookConsumer> findAll();
+    // JpaRepository already provides findAll() with correct null constraints
 
     /**
      * Belirli bir callback URL'e sahip consumer'ı bulur

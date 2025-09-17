@@ -121,6 +121,7 @@ public class WebhookService {
     /**
      * Belirli bir URL'e webhook gönderir (eski yöntem)
      */
+    @SuppressWarnings("unused")
     private void sendWebhookToUrl(WebhookRequest webhookRequest, String url) {
         // Webhook log kaydını oluştur
         WebhookLog webhookLog = new WebhookLog(

@@ -14,6 +14,7 @@ public class WebConfig implements WebMvcConfigurer {
         return new RestTemplate();
     }
 
+    @SuppressWarnings("null")
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
